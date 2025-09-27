@@ -45,9 +45,7 @@ Thumbs.db
 
 # Data files
 data/
-models/*
-!models/final_model_data.pkl
-!models/final_model.pth
+models/
 
 # Jupyter Notebooks
 .ipynb_checkpoints
