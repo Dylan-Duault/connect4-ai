@@ -1,6 +1,11 @@
-# AlphaZero Connect 4 - PyTorch Implementation
+# 🔴 AlphaZero Connect 4 AI
 
-A high-performance AlphaZero implementation for Connect 4 using PyTorch with CUDA 13 support. This version is optimized for GPU training and achieves 10-20x faster performance than the JavaScript version.
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://python.org)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-orange.svg)](https://pytorch.org)
+[![CUDA](https://img.shields.io/badge/CUDA-12.0+-green.svg)](https://developer.nvidia.com/cuda-downloads)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+A high-performance implementation of DeepMind's AlphaZero algorithm for Connect 4, built with PyTorch and optimized for GPU training. This implementation features a neural network with dual heads (policy and value), Monte Carlo Tree Search (MCTS), and self-play training.
 
 ## 🚀 Features
 
@@ -18,30 +23,48 @@ A high-performance AlphaZero implementation for Connect 4 using PyTorch with CUD
 
 ## 📋 Requirements
 
-- Python 3.11+
-- NVIDIA GPU with CUDA 13.0+
-- 8GB+ GPU memory (recommended)
-- 16GB+ system RAM
+### System Requirements
+- **Python**: 3.11 or higher
+- **GPU**: NVIDIA GPU with CUDA support (optional but highly recommended)
+- **Memory**: 4GB+ GPU memory, 8GB+ system RAM
+- **OS**: Linux, macOS, or Windows
+
+### Dependencies
+- PyTorch 2.0+
+- NumPy
+- Matplotlib (for visualization)
+- tqdm (for progress bars)
 
 ## 🛠️ Installation
 
-### 1. Set up Python Environment
+### 1. Clone the Repository
 ```bash
-cd Connect4-PyTorch
+git clone https://github.com/Dylan-Duault/connect4-ai.git
+cd connect4-ai
+```
+
+### 2. Set up Python Environment
+```bash
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### 2. Install PyTorch with CUDA 13
+### 3. Install Dependencies
 ```bash
-pip3 install --pre torch torchvision --index-url https://download.pytorch.org/whl/nightly/cu130
-pip install matplotlib tqdm
+# Option 1: Install from requirements.txt
+pip install -r requirements.txt
+
+# Option 2: Manual installation
+pip install torch torchvision numpy matplotlib tqdm
 ```
 
-### 3. Verify GPU Setup
+### 4. Verify Installation
 ```bash
-python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else \"None\"}')"
+python -c "import torch; print(f'PyTorch: {torch.__version__}')"
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
 ```
+
+> **Note**: GPU support is optional but highly recommended for faster training. The system will automatically fall back to CPU if CUDA is not available.
 
 ## 🎯 Quick Start
 
@@ -103,34 +126,45 @@ Key parameters:
 
 ### Performance Tuning
 
-**For RTX 5070 TI (your setup):**
+**For High-End GPUs (RTX 4080+, RTX 5070+):**
 ```bash
-# Optimal settings for your GPU
-python train.py \\
-  --games-per-iteration 100 \\
-  --mcts-simulations 1200 \\
-  --batch-size 64 \\
-  --training-epochs 15 \\
+# Optimal settings for powerful GPUs
+python train.py \
+  --games-per-iteration 100 \
+  --mcts-simulations 1200 \
+  --batch-size 64 \
+  --training-epochs 15 \
   --iterations 150
 ```
 
-**For weaker GPUs:**
+**For Mid-Range GPUs (RTX 3060, RTX 4060):**
 ```bash
-# Reduced settings
-python train.py \\
-  --games-per-iteration 25 \\
-  --mcts-simulations 400 \\
-  --batch-size 16 \\
+# Balanced settings
+python train.py \
+  --games-per-iteration 50 \
+  --mcts-simulations 800 \
+  --batch-size 32 \
+  --training-epochs 10 \
+  --iterations 100
+```
+
+**For Lower-End GPUs or CPU:**
+```bash
+# Reduced settings for limited hardware
+python train.py \
+  --games-per-iteration 25 \
+  --mcts-simulations 400 \
+  --batch-size 16 \
   --training-epochs 5
 ```
 
 ## 📊 Expected Performance
 
-### Training Speed (RTX 5070 TI)
-- **Self-play**: ~5-10 games/second
-- **Neural Network**: ~200 samples/second inference
-- **MCTS**: ~300 simulations/second
-- **Complete iteration**: ~20-40 seconds (50 games)
+### Training Speed (Modern GPU)
+- **Self-play**: ~5-15 games/second (depending on hardware)
+- **Neural Network**: ~100-500 samples/second inference
+- **MCTS**: ~200-1000 simulations/second
+- **Complete iteration**: ~20-60 seconds (50 games)
 
 ### Training Timeline
 - **Beginner level**: 1-2 hours (20-30 iterations)
@@ -247,18 +281,19 @@ with open('logs/training_log.json') as f:
 # Analyze training metrics
 ```
 
-## 🆚 Performance Comparison
+## 🧠 How It Works
 
-### vs JavaScript Version
-- **Training Speed**: 10-20x faster
-- **Memory Usage**: 50% less
-- **GPU Utilization**: Full acceleration
-- **Scalability**: Better parallel processing
+### AlphaZero Algorithm
+1. **Neural Network**: A CNN with residual blocks predicts move probabilities and position values
+2. **Monte Carlo Tree Search**: Uses the neural network to guide tree exploration
+3. **Self-Play**: The AI plays against itself to generate training data
+4. **Training Loop**: The neural network learns from self-play games and improves
 
-### vs Other Implementations
-- **TensorFlow**: Similar performance, better PyTorch ecosystem
-- **C++**: Comparable speed, easier development
-- **JAX**: Similar GPU performance, simpler Python
+### Key Components
+- **Dual-Head Network**: Separate outputs for policy (move probabilities) and value (position evaluation)
+- **Residual Architecture**: Deep network with skip connections for better gradient flow
+- **UCB Selection**: Balances exploration and exploitation in MCTS
+- **Temperature Scheduling**: Controls randomness during training vs evaluation
 
 ## 🏆 Training Tips
 
@@ -275,13 +310,38 @@ with open('logs/training_log.json') as f:
 - **High learning rate** = faster convergence, risk instability
 - **More epochs** = better learning, risk overfitting
 
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+### Development Setup
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Add tests if applicable
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **DeepMind**: For the original AlphaZero algorithm
+- **PyTorch Team**: For the excellent deep learning framework
+- **Connect 4 Community**: For the classic game that inspired this project
+
 ## 📚 References
 
-- [AlphaZero Paper](https://arxiv.org/abs/1712.01815)
+- [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm (AlphaZero Paper)](https://arxiv.org/abs/1712.01815)
 - [PyTorch Documentation](https://pytorch.org/docs/)
 - [Connect 4 Game Theory](https://en.wikipedia.org/wiki/Connect_Four)
-- [MCTS Algorithm](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search)
+- [Monte Carlo Tree Search](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search)
 
 ---
 
-**Ready to train your AlphaZero Connect 4 AI! 🎮🤖**
+**Ready to train your own Connect 4 AlphaZero AI! 🎮🤖**
+
+*Star ⭐ this repository if you found it helpful!*
